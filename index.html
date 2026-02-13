@@ -13,31 +13,28 @@
       --grayBtn:#e9edf2;
     }
     *{box-sizing:border-box}
-
-    /* ✅ make scroll behavior predictable everywhere */
-    html, body { height:auto; }
-
     body{
       margin:0;
       min-height:100vh;
+      display:block;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background:
         radial-gradient(1200px 800px at 20% 20%, #ffd2e0, transparent 55%),
         radial-gradient(1200px 800px at 80% 80%, #ffc1d6, transparent 55%),
         linear-gradient(135deg, #ffeaf2, #ffd6e6);
       color:var(--text);
-
-      /* ✅ ensure vertical scroll works */
       overflow-x:hidden;
       overflow-y:auto;
-
-      padding: 28px 0;
-      /* ✅ remove flex layout (can break scrolling on some mobile browsers) */
-      display:block;
+      -webkit-overflow-scrolling: touch;
     }
-
+    .wrap{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px 14px 28px;
+    }
     .card{
-      width:min(1100px, 92vw);
+      width:100%;
       border-radius:38px;
       background:var(--card);
       backdrop-filter: blur(10px);
@@ -45,7 +42,6 @@
       padding:40px 34px 34px;
       text-align:center;
       position:relative;
-      margin: 0 auto; /* ✅ center without flex */
     }
 
     /* top icon */
@@ -55,548 +51,489 @@
       margin:0 auto 12px;
       filter: drop-shadow(0 18px 30px rgba(0,0,0,.18));
     }
-    .iconWrap svg{ width:100%; height:100%; display:block; }
+    .iconWrap svg{width:100%;height:100%;display:block}
 
     h1{
-      margin:12px 0 26px;
-      font-size: clamp(34px, 5vw, 64px);
-      letter-spacing:-.03em;
-      font-weight:900;
+      font-size: clamp(34px, 5.4vw, 72px);
+      margin: 8px 0 10px;
+      letter-spacing:-.02em;
+      line-height:1.05;
+      font-weight: 900;
+    }
+    .sub{
+      font-size: clamp(18px, 2.4vw, 28px);
+      margin: 0 0 22px;
+      opacity:.92;
+      font-weight: 700;
     }
 
-    /* button area */
     .stage{
       position:relative;
+      width:min(760px, 92vw);
+      margin: 14px auto 8px;
       height:190px;
-      width:min(820px, 88vw);
-      margin:0 auto;
-      touch-action: none; /* helps on mobile */
+      border-radius:24px;
     }
+
     button{
       border:0;
       cursor:pointer;
       font-weight:900;
       border-radius:999px;
-      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+      padding: 16px 26px;
+      font-size: 20px;
+      transition: transform .08s ease, filter .15s ease;
       user-select:none;
-      -webkit-user-select:none;
-      touch-action: manipulation;
-      position:absolute;
-      top:50%;
-      transform: translate(-50%,-50%);
-      transition: transform .06s ease, filter .2s ease;
-      white-space:nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
-    button:active{ transform: translate(-50%,-49%) scale(.99); }
-
-    /* YES huge */
+    button:active{transform: scale(.97)}
     #yesBtn{
-      left:40%;
-      background:var(--pink);
-      color:#fff;
-      font-size: clamp(34px, 3.4vw, 56px);
-      padding: 34px 86px;
+      z-index: 3;
+      background: var(--pink);
+      color:white;
+      box-shadow: 0 18px 40px rgba(255,59,134,.35);
+      position:absolute;
+      left: 40%;
+      top: 50%;
+      transform: translate(-50%,-50%);
     }
-
-    /* NO small gray */
     #noBtn{
-      left:74%;
-      background:var(--grayBtn);
-      color:#111827;
-      font-size: 22px;
-      padding: 14px 26px;
-      box-shadow: 0 14px 28px rgba(0,0,0,.14);
+      z-index: 2;
+      background: var(--grayBtn);
+      color:#111;
+      position:absolute;
+      left: 74%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 14px 32px rgba(0,0,0,.12);
     }
 
-    .hint{
-      margin-top:18px;
-      font-size:18px;
-      opacity:.75;
-      min-height:24px;
-    }
-
-    /* second page content */
-    .yay{
+    /* YAY page */
+    #yay{
       display:none;
-      margin-top:10px;
-      padding-top:8px;
+      margin-top: 18px;
     }
-    .yayTitle{
-      font-size: clamp(40px, 5vw, 70px);
-      font-weight:1000;
-      letter-spacing:-.03em;
-      margin:8px 0 16px;
+    #yay h2{
+      font-size: clamp(40px, 6vw, 78px);
+      margin: 6px 0 10px;
+      font-weight: 950;
+      letter-spacing:-.02em;
+    }
+    #yay .boom{
+      font-size: clamp(18px, 2.8vw, 34px);
+      margin: 0 0 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing:.02em;
     }
 
-    /* ✅ slideshow: fixed viewport-friendly area + images never crop */
+    /* slideshow */
     .slideshow{
-      width:min(820px, 88vw);
-      margin:0 auto;
-      border-radius:20px;
-      overflow:hidden;
+      width:min(920px, 94vw);
+      margin: 16px auto 0;
+      background: rgba(255,255,255,.65);
+      border-radius: 26px;
+      padding: 14px 14px 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.12);
       position:relative;
-      background:#f3f4f6;
-      box-shadow: 0 22px 60px rgba(0,0,0,.18);
-
-      /* ✅ make it tall enough; still allows page scroll naturally */
-      height: min(78vh, 620px);
-      min-height: 320px;
-
+      overflow:hidden;
+    }
+    .slideTop{
       display:flex;
       align-items:center;
       justify-content:center;
+      gap:10px;
+      font-weight:900;
+      margin: 6px 0 10px;
+      font-size: 18px;
+      opacity:.85;
     }
-
-    /* ✅ stack slides so only one "takes space" (prevents layout weirdness) */
-    .slideImg{
-      position:absolute;
-      inset:0;
+    .photoFrame{
+      width:100%;
+      border-radius: 18px;
+      background: rgba(235,241,248,.7);
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height: min(78vh, 620px);
+      max-height: 620px;
+    }
+    .photoFrame img{
       width:100%;
       height:100%;
-      object-fit: contain;         /* ✅ show full photo */
-      object-position: center;
+      object-fit: contain;
       display:block;
-      opacity:0;
-      transition: opacity .35s ease;
-      background:#f3f4f6;
+      user-select:none;
+      -webkit-user-drag:none;
     }
-    .slideImg.active{ opacity:1; }
-
-    .caption{
-      position:absolute;
-      left:14px; right:14px; bottom:14px;
-      padding:10px 14px;
-      border-radius:16px;
-      background: rgba(0,0,0,.45);
+    .slideNav{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:12px;
+    }
+    .navBtn{
+      background:#111;
       color:#fff;
-      font-size:15px;
-      backdrop-filter: blur(6px);
-      text-align:left;
-      z-index:2;
+      font-weight:900;
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 14px;
+      opacity:.92;
+    }
+    .navBtn.secondary{
+      background: rgba(17,17,17,.1);
+      color:#111;
     }
 
-    /* floating hearts */
-    .heart{
-      position:fixed;
-      bottom:-20px;
-      pointer-events:none;
-      opacity:.95;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
-      animation: floatUp linear forwards;
+    /* finale */
+    #finale{
+      display:none;
+      margin-top: 18px;
+      padding: 18px 14px 6px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 16px 44px rgba(0,0,0,.12);
     }
-    @keyframes floatUp{
-      to{ transform: translateY(-120vh) translateX(var(--drift)); opacity:0; }
+    #finale .big{
+      font-size: clamp(26px, 3.4vw, 44px);
+      font-weight: 950;
+      margin: 0 0 8px;
+    }
+    #finale .small{
+      font-size: 18px;
+      opacity:.9;
+      margin: 0 0 10px;
+      font-weight: 700;
     }
 
-    /* finale overlay */
-    .finale{
+    /* heartbreak */
+    #heartbreak{
+      display:none;
       position:fixed;
       inset:0;
-      display:none;
-      place-items:center;
-      background: rgba(0,0,0,.45);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,.52);
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
       z-index:9999;
     }
-    .finaleBox{
-      width:min(920px, 92vw);
-      padding:26px 18px;
-      border-radius:28px;
+    .hbCard{
+      width:min(780px, 92vw);
       background: rgba(255,255,255,.92);
-      box-shadow: 0 26px 90px rgba(0,0,0,.30);
+      border-radius: 26px;
+      padding: 26px 22px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.25);
       text-align:center;
     }
-    .finaleText{
-      font-weight:1000;
-      letter-spacing:-.02em;
-      font-size: clamp(28px, 4vw, 54px);
-      margin:0;
-    }
-    .finaleSub{
-      margin:10px 0 0;
-      font-size:18px;
-      opacity:.8;
-    }
-
-    /* heartbreak overlay (if NO is clicked) */
-    .heartbreak{
-      position:fixed;
-      inset:0;
-      display:none;
-      place-items:center;
-      background: rgba(0,0,0,.52);
-      backdrop-filter: blur(6px);
-      z-index:10000;
-    }
-    .heartbreakBox{
-      width:min(880px, 92vw);
-      padding:26px 18px;
-      border-radius:28px;
-      background: rgba(255,255,255,.94);
-      box-shadow: 0 26px 90px rgba(0,0,0,.34);
-      text-align:center;
-    }
-    .heartbreakTitle{
-      font-weight:1000;
-      letter-spacing:-.02em;
-      font-size: clamp(30px, 4vw, 56px);
+    .hbCard h3{
       margin:0 0 10px;
+      font-size: clamp(24px, 3.4vw, 44px);
+      font-weight: 950;
     }
-    .heartbreakMsg{
+    .hbCard p{
       margin:0;
       font-size: clamp(16px, 2.2vw, 22px);
-      opacity:.9;
+      font-weight: 800;
+    }
+    .hbCard .close{
+      margin-top: 16px;
+      background: var(--pink);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 900;
     }
 
-    @media (max-width:520px){
-      body{ padding: 18px 0; }
-      .card{ padding:26px 16px 22px; border-radius:26px; }
-      .iconWrap{ width:150px; height:150px; }
-      .stage{ height:170px; }
-      #yesBtn{ padding: 26px 62px; }
+    /* confetti canvas */
+    #fx{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index: 8000;
+    }
 
-      /* ✅ a bit taller on phone so portrait photos show better */
-      .slideshow{
-        height: min(72vh, 520px);
-        min-height: 300px;
-      }
+    @media (max-width: 520px){
+      .card{ padding: 28px 18px 22px; border-radius: 26px; }
+      .stage{ height: 210px; }
+      button{ font-size:18px; padding: 14px 20px; }
+      #yesBtn{ left: 36%; }
+      #noBtn{ left: 74%; }
+      .slideshow{ padding: 12px 12px 14px; }
+      .photoFrame{ height: min(64vh, 520px); }
     }
   </style>
 </head>
 
 <body>
-  <main class="card" id="card">
-    <div class="iconWrap" aria-hidden="true">
-      <svg viewBox="0 0 220 220">
-        <defs>
-          <radialGradient id="g" cx="50%" cy="40%" r="70%">
-            <stop offset="0%" stop-color="#ffd5b8"/>
-            <stop offset="100%" stop-color="#f4b28c"/>
-          </radialGradient>
-          <linearGradient id="h" x1="0" x2="1">
-            <stop offset="0" stop-color="#ff4a8e"/>
-            <stop offset="1" stop-color="#ff1f6d"/>
-          </linearGradient>
-        </defs>
-        <path d="M158 44c-8 0-15 5-18 12-3-7-10-12-18-12-11 0-20 9-20 20 0 20 38 43 38 43s38-23 38-43c0-11-9-20-20-20z"
-              fill="url(#h)" opacity="0.95"/>
-        <circle cx="110" cy="120" r="72" fill="url(#g)"/>
-        <path d="M63 78l28 12-16 22z" fill="#f0ab7c"/>
-        <path d="M157 78l-28 12 16 22z" fill="#f0ab7c"/>
-        <circle cx="88" cy="118" r="8" fill="#0b0b0b"/>
-        <circle cx="132" cy="118" r="8" fill="#0b0b0b"/>
-        <path d="M110 126c10 6 10 18 0 24-10-6-10-18 0-24z" fill="#ff77a8"/>
-      </svg>
-    </div>
+  <canvas id="fx"></canvas>
 
-    <h1><span id="nameTarget">Kubie</span> will you be my valentine?</h1>
-
-    <div class="stage" id="stage">
-      <button id="yesBtn">Yes</button>
-      <button id="noBtn">No</button>
-    </div>
-
-    <div class="hint" id="hint">“No” seems a bit shy 😈</div>
-
-    <section class="yay" id="yay">
-      <div class="yayTitle">YAY! 🎉🥳💖</div>
-
-      <div class="slideshow" id="slideshow">
-        <div class="caption" id="caption">Loading photos…</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="iconWrap" aria-hidden="true">
+        <!-- cute bird -->
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <radialGradient id="g" cx="35%" cy="35%" r="70%">
+              <stop offset="0" stop-color="#ffe2cf"/>
+              <stop offset="1" stop-color="#ffb78d"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="105" r="78" fill="url(#g)"/>
+          <circle cx="76" cy="92" r="9" fill="#111"/>
+          <circle cx="124" cy="92" r="9" fill="#111"/>
+          <path d="M100 106c10 8 10 18 0 26c-10-8-10-18 0-26z" fill="#ff6aa8"/>
+          <path d="M64 62c18 0 26 10 30 26c-18-2-30-10-30-26z" fill="#f4b7c7" opacity=".95"/>
+          <path d="M136 62c-18 0-26 10-30 26c18-2 30-10 30-26z" fill="#f4b7c7" opacity=".95"/>
+          <path d="M140 40c18 0 28 10 28 28c-18 2-28-10-28-28z" fill="#ff3b86" opacity=".92"/>
+        </svg>
       </div>
-    </section>
-  </main>
 
-  <!-- finale message overlay -->
-  <div class="finale" id="finale">
-    <div class="finaleBox">
-      <p class="finaleText">HAPPY VALENTINES MY CUTIE! READY FOR OUR FANCY DATIES?</p>
-      <p class="finaleSub">🎆🎇💖</p>
+      <h1>Kubie will you be my valentine?</h1>
+
+      <div class="stage" id="stage">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+      </div>
+
+      <div id="yay">
+        <h2>YAY! 🎉😚💖</h2>
+        <div class="boom">HAPPY VALENTINES MY CUTIE! READY FOR OUR FANCY DATIES?</div>
+
+        <div class="slideshow" id="slideshow">
+          <div class="slideTop" id="caption">photo 1</div>
+          <div class="photoFrame">
+            <img id="slideImg" src="" alt="photo 1" />
+          </div>
+          <div class="slideNav">
+            <button class="navBtn secondary" id="prevBtn">Prev</button>
+            <button class="navBtn" id="nextBtn">Next</button>
+          </div>
+        </div>
+
+        <div id="finale">
+          <div class="big">That’s all of them 💘</div>
+          <div class="small">Ok. Now come here. Fancy daties time.</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- heartbreak overlay (if NO is clicked) -->
-  <div class="heartbreak" id="heartbreak">
-    <div class="heartbreakBox">
-      <p class="heartbreakTitle">💔 GIRLFRIEND HEARTBROKEN 💔</p>
-      <p class="heartbreakMsg">Give girlfriend a bit huggie right now!!</p>
+  <div id="heartbreak">
+    <div class="hbCard">
+      <h3>💔 Girlfriend heartbroken</h3>
+      <p>Give girlfriend a bit huggie right now!!</p>
+      <button class="close" id="hbClose">Ok ok 😤</button>
     </div>
   </div>
 
   <script>
-    // =======================
-    // CUSTOMISE HERE
-    // =======================
-    const TARGET_NAME = "Kubie";
-
-    // Reaction-time-ish feel:
-    // Humans react ~200ms+; we move FAST but not impossible.
-    const EVADE_DISTANCE = 220;     // bigger = starts running earlier (harder)
-    const MOVE_MIN = 140;           // bigger jumps = harder
-    const MOVE_MAX = 320;
-    const COOLDOWN_MS = 85;         // limit how often it can move (keeps it "possible")
-    const EDGE_PAD = 10;
-
-    // photos: name them photo01.jpg ... photo50.jpg
-    function generatePhotos(count, ext="jpg", prefix="photo") {
+    // ====== Photo list (ONLY 43 photos) ======
+    function generatePhotos(n, prefix="photo", ext=".jpg"){
       const arr = [];
-      for (let i = 1; i <= count; i++) {
-        const num = String(i).padStart(2, "0");
-        arr.push({ src: `${prefix}${num}.${ext}`, caption: "" });
+      for (let i=1;i<=n;i++){
+        const num = String(i).padStart(2,"0");
+        arr.push({ src: `${prefix}${num}${ext}`, caption: "" });
       }
       return arr;
     }
-    const PHOTOS = generatePhotos(50, "jpg", "photo");
-    const SLIDE_MS = 1000;
-    // =======================
+    const PHOTOS = generatePhotos(43, "photo", ".jpg");
 
-    document.getElementById("nameTarget").textContent = TARGET_NAME;
-
+    // ====== Elements ======
     const stage = document.getElementById("stage");
     const yesBtn = document.getElementById("yesBtn");
     const noBtn  = document.getElementById("noBtn");
-    const yay    = document.getElementById("yay");
-    const hint   = document.getElementById("hint");
+    const yay = document.getElementById("yay");
 
-    const slideshow = document.getElementById("slideshow");
+    const slideImg = document.getElementById("slideImg");
     const captionEl = document.getElementById("caption");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const finale = document.getElementById("finale");
 
-    function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+    const heartbreak = document.getElementById("heartbreak");
+    const hbClose = document.getElementById("hbClose");
 
-    function setNoCenter(x, y){
-      noBtn.style.left = (x + noBtn.offsetWidth/2) + "px";
-      noBtn.style.top  = (y + noBtn.offsetHeight/2) + "px";
+    // ====== Button positioning ======
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function setNoCenter(clientX, clientY){
+      const rect = stage.getBoundingClientRect();
+      const btnW = noBtn.offsetWidth;
+      const btnH = noBtn.offsetHeight;
+      const x = clamp(clientX - rect.left - btnW/2, 6, rect.width  - btnW - 6);
+      const y = clamp(clientY - rect.top  - btnH/2, 6, rect.height - btnH - 6);
+      noBtn.style.left = `${x + btnW/2}px`;
+      noBtn.style.top  = `${y + btnH/2}px`;
     }
 
-    function randomNearPointer(clientX, clientY){
+    function randomWithinStage(){
       const rect = stage.getBoundingClientRect();
+      const btnW = noBtn.offsetWidth;
+      const btnH = noBtn.offsetHeight;
+      const pad = 10;
 
-      const angle = Math.random() * Math.PI * 2;
-      const radius = MOVE_MIN + Math.random() * (MOVE_MAX - MOVE_MIN);
-
-      let x = (clientX - rect.left) + Math.cos(angle) * radius;
-      let y = (clientY - rect.top)  + Math.sin(angle) * radius;
-
-      x = clamp(x, EDGE_PAD, rect.width  - noBtn.offsetWidth  - EDGE_PAD);
-      y = clamp(y, EDGE_PAD, rect.height - noBtn.offsetHeight - EDGE_PAD);
+      const x = rect.left + pad + Math.random() * Math.max(0, rect.width - btnW - pad * 2);
+      const y = rect.top  + pad + Math.random() * Math.max(0, rect.height - btnH - pad * 2);
 
       setNoCenter(x, y);
     }
 
-    function distToNo(clientX, clientY){
-      const b = noBtn.getBoundingClientRect();
-      const cx = b.left + b.width/2;
-      const cy = b.top  + b.height/2;
-      return Math.hypot(clientX - cx, clientY - cy);
+    // --- NO button movement (timer-based; works on mouse + touch) ---
+    const MOVE_INTERVAL_MS = 420; // fast-ish but still clickable
+    let moveTimer = null;
+
+    function startNoDance(){
+      stopNoDance();
+      // Nudge once shortly after load so it doesn't sit still on some mobile webviews
+      setTimeout(randomWithinStage, 80);
+      moveTimer = setInterval(randomWithinStage, MOVE_INTERVAL_MS);
     }
 
-    // Move limiter so it's fast but still "possible" to click
-    let lastMove = 0;
-    function maybeMove(clientX, clientY){
-      const now = performance.now();
-      if (now - lastMove < COOLDOWN_MS) return;
-      lastMove = now;
-      randomNearPointer(clientX, clientY);
-    }
-
-    // ✅ unified handler for mouse + touch (fallbacks for iOS)
-    function considerEvade(clientX, clientY){
-      if (yay.style.display === "block") return;
-      if (distToNo(clientX, clientY) < EVADE_DISTANCE) {
-        maybeMove(clientX, clientY);
+    function stopNoDance(){
+      if (moveTimer){
+        clearInterval(moveTimer);
+        moveTimer = null;
       }
     }
 
-    // Pointer (modern)
-    stage.addEventListener("pointermove", (e) => considerEvade(e.clientX, e.clientY), { passive: true });
-    stage.addEventListener("pointerdown", (e) => {
-      if (yay.style.display === "block") return;
-      // on phone there is no hover; start evading as soon as finger touches stage
-      maybeMove(e.clientX, e.clientY);
-      try { stage.setPointerCapture(e.pointerId); } catch {}
+    // Keep NO inside the stage after resizes/orientation changes
+    window.addEventListener("resize", () => {
+      if (yay.style.display !== "block") randomWithinStage();
     }, { passive: true });
 
-    // Mouse fallback
-    stage.addEventListener("mousemove", (e) => considerEvade(e.clientX, e.clientY), { passive: true });
+    startNoDance();
 
-    // Touch fallback (important for some mobile browsers)
-    stage.addEventListener("touchstart", (e) => {
-      if (yay.style.display === "block") return;
-      const t = e.touches && e.touches[0];
-      if (!t) return;
-      maybeMove(t.clientX, t.clientY);
-    }, { passive: true });
-
-    stage.addEventListener("touchmove", (e) => {
-      if (yay.style.display === "block") return;
-      const t = e.touches && e.touches[0];
-      if (!t) return;
-      considerEvade(t.clientX, t.clientY);
-    }, { passive: true });
-
-    noBtn.addEventListener("pointerenter", (e) => {
-      if (yay.style.display === "block") return;
-      maybeMove(e.clientX, e.clientY);
-    });
-
-    // If NO gets clicked: heartbreak overlay + sad burst
-    function spawnSad(){
-      const el = document.createElement("div");
-      el.style.position = "fixed";
-      el.style.left = (10 + Math.random() * 80) + "vw";
-      el.style.top  = (10 + Math.random() * 70) + "vh";
-      el.style.fontSize = (16 + Math.random() * 20) + "px";
-      el.style.zIndex = 10001;
-      el.style.pointerEvents = "none";
-      el.style.opacity = "1";
-      el.textContent = ["💔","😭","🥺","😢","🫠"][Math.floor(Math.random()*5)];
-
-      const dx = (Math.random() * 220 - 110);
-      const dy = -(120 + Math.random() * 220);
-      const dur = 900 + Math.random() * 700;
-
-      el.animate(
-        [
-          { transform: "translate(0,0) scale(1)", opacity: 1 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${0.6 + Math.random()*0.8})`, opacity: 0 }
-        ],
-        { duration: dur, easing: "cubic-bezier(.2,.8,.2,1)" }
-      );
-
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), dur + 50);
-    }
-
-    function showHeartbreak(){
-      const hb = document.getElementById("heartbreak");
-      hb.style.display = "grid";
-      for (let i = 0; i < 26; i++) setTimeout(spawnSad, i * 40);
-      setTimeout(() => hb.style.display = "none", 2500);
-    }
-
+    // ====== Heartbreak if NO is clicked ======
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      hint.textContent = "Oh no… 💔";
-      showHeartbreak();
-      maybeMove(Math.random()*window.innerWidth, Math.random()*window.innerHeight);
+      heartbreak.style.display = "flex";
+    });
+    hbClose.addEventListener("click", () => {
+      heartbreak.style.display = "none";
     });
 
-    // initial placement of NO
-    window.addEventListener("load", () => {
-      const r = stage.getBoundingClientRect();
-      randomNearPointer(r.left + r.width*0.78, r.top + r.height*0.55);
+    // ====== YES click -> show yay + start slideshow ======
+    yesBtn.addEventListener("click", () => {
+      stopNoDance();
+      stage.style.display = "none";
+      showYay();
+      burstFireworks();
+      startSlideshow();
     });
 
-    // ---- slideshow + finale ----
+    function showYay(){
+      yay.style.display = "block";
+    }
+
+    // ====== Slideshow ======
     let slideIdx = 0;
-    let slideTimer = null;
+    let autoTimer = null;
     let finaleShownThisLoop = false;
 
-    function buildSlides(){
-      [...slideshow.querySelectorAll(".slideImg")].forEach(n => n.remove());
-
-      PHOTOS.forEach((p, i) => {
-        const img = document.createElement("img");
-        img.className = "slideImg" + (i === 0 ? " active" : "");
-        img.src = p.src;
-        img.alt = "photo " + (i+1);
-        img.dataset.caption = p.caption || "";
-        slideshow.insertBefore(img, captionEl);
-      });
-
-      captionEl.textContent = PHOTOS[0]?.caption || "";
+    function renderSlide(){
+      const p = PHOTOS[slideIdx];
+      slideImg.src = p.src;
+      captionEl.textContent = p.caption || ("photo " + (slideIdx + 1));
     }
 
-    function spawnFirework() {
-      const el = document.createElement("div");
-      el.style.position = "fixed";
-      el.style.left = (10 + Math.random() * 80) + "vw";
-      el.style.top  = (10 + Math.random() * 60) + "vh";
-      el.style.fontSize = (14 + Math.random() * 22) + "px";
-      el.style.zIndex = 99999;
-      el.style.pointerEvents = "none";
-      el.style.opacity = "1";
-
-      const chars = ["🎆","🎇","✨","💥","🎉","🥳","💖","💘"];
-      el.textContent = chars[Math.floor(Math.random() * chars.length)];
-
-      const dx = (Math.random() * 240 - 120);
-      const dy = -(120 + Math.random() * 220);
-      const dur = 900 + Math.random() * 700;
-
-      el.animate(
-        [
-          { transform: "translate(0,0) scale(1)", opacity: 1 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${0.6 + Math.random()*0.8})`, opacity: 0 }
-        ],
-        { duration: dur, easing: "cubic-bezier(.2,.8,.2,1)" }
-      );
-
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), dur + 50);
+    function nextSlide(){
+      slideIdx++;
+      if (slideIdx >= PHOTOS.length){
+        slideIdx = 0;
+        finaleShownThisLoop = false;
+        finale.style.display = "none";
+      }
+      renderSlide();
+      // show finale once per loop, after the last photo appears
+      if (!finaleShownThisLoop && slideIdx === PHOTOS.length - 1){
+        finaleShownThisLoop = true;
+        setTimeout(() => { finale.style.display = "block"; }, 900);
+      }
     }
 
-    function showFinale() {
-      const finale = document.getElementById("finale");
-      finale.style.display = "grid";
-      for (let i = 0; i < 90; i++) setTimeout(spawnFirework, i * 16);
-      setTimeout(() => { finale.style.display = "none"; }, 4500);
+    function prevSlide(){
+      slideIdx--;
+      if (slideIdx < 0) slideIdx = PHOTOS.length - 1;
+      renderSlide();
     }
+
+    prevBtn.addEventListener("click", () => { prevSlide(); });
+    nextBtn.addEventListener("click", () => { nextSlide(); });
 
     function startSlideshow(){
-      const slides = [...slideshow.querySelectorAll(".slideImg")];
-      if (!slides.length) {
-        captionEl.textContent = "No photos found — check filenames.";
-        return;
-      }
-
       slideIdx = 0;
       finaleShownThisLoop = false;
-      if (slideTimer) clearInterval(slideTimer);
-
-      slideTimer = setInterval(() => {
-        slides[slideIdx].classList.remove("active");
-        slideIdx = (slideIdx + 1) % slides.length;
-        slides[slideIdx].classList.add("active");
-        captionEl.textContent = slides[slideIdx].dataset.caption || "";
-
-        const lastIndex = slides.length - 1;
-        if (slideIdx === lastIndex && !finaleShownThisLoop) {
-          finaleShownThisLoop = true;
-          showFinale();
-        }
-        if (slideIdx === 0) finaleShownThisLoop = false;
-
-      }, SLIDE_MS);
+      finale.style.display = "none";
+      renderSlide();
+      clearInterval(autoTimer);
+      autoTimer = setInterval(nextSlide, 1600);
     }
 
-    // hearts burst when YES clicked
-    function spawnHeart(){
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.textContent = ["💘","💖","💗","💞","💕","❤️","🎉","🥳"][Math.floor(Math.random()*8)];
-      h.style.left = (Math.random()*100) + "vw";
-      h.style.setProperty("--drift", (Math.random()*160 - 80) + "px");
-      const dur = 2.0 + Math.random()*2.0;
-      h.style.animationDuration = dur + "s";
-      h.style.fontSize = (14 + Math.random()*22) + "px";
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), dur*1000 + 200);
+    // ====== Fireworks / confetti ======
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+    let W=0,H=0;
+    function resize(){
+      W = canvas.width = window.innerWidth * devicePixelRatio;
+      H = canvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
     }
+    window.addEventListener("resize", resize, {passive:true});
+    resize();
 
-    yesBtn.addEventListener("click", () => {
-      stage.style.display = "none";
-      hint.style.display = "none";
-      yay.style.display = "block";
+    const particles = [];
+    function spawnBurst(x,y, count=90){
+      for(let i=0;i<count;i++){
+        const ang = Math.random()*Math.PI*2;
+        const spd = 2 + Math.random()*6;
+        particles.push({
+          x,y,
+          vx: Math.cos(ang)*spd,
+          vy: Math.sin(ang)*spd,
+          life: 60 + Math.random()*40,
+          r: 2 + Math.random()*3,
+          hue: Math.random()*360
+        });
+      }
+    }
+    function tick(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.life -= 1;
+        p.vy += 0.07;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.98;
+        p.vy *= 0.98;
 
-      for (let i=0; i<30; i++) setTimeout(spawnHeart, i*60);
+        const a = Math.max(0, Math.min(1, p.life/90));
+        ctx.globalAlpha = a;
+        ctx.beginPath();
+        ctx.fillStyle = `hsl(${p.hue}, 90%, 60%)`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
 
-      buildSlides();
-      startSlideshow();
+        if (p.life <= 0) particles.splice(i,1);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(tick);
+    }
+    tick();
 
-      // scroll to slideshow area (page scroll now works reliably)
-      yay.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    function burstFireworks(){
+      const rect = document.querySelector(".card").getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + 120;
+      spawnBurst(cx, cy, 120);
+      setTimeout(() => spawnBurst(cx-160, cy+40, 90), 180);
+      setTimeout(() => spawnBurst(cx+170, cy+30, 90), 300);
+      setTimeout(() => spawnBurst(cx, cy+120, 110), 520);
+    }
   </script>
 </body>
 </html>
