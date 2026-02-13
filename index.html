@@ -13,6 +13,10 @@
       --grayBtn:#e9edf2;
     }
     *{box-sizing:border-box}
+
+    /* ✅ make scroll behavior predictable everywhere */
+    html, body { height:auto; }
+
     body{
       margin:0;
       min-height:100vh;
@@ -23,15 +27,13 @@
         linear-gradient(135deg, #ffeaf2, #ffd6e6);
       color:var(--text);
 
-      /* ✅ allow vertical scrolling */
+      /* ✅ ensure vertical scroll works */
       overflow-x:hidden;
       overflow-y:auto;
 
-      /* ✅ avoid "too short" feeling; keep comfy padding */
       padding: 28px 0;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
+      /* ✅ remove flex layout (can break scrolling on some mobile browsers) */
+      display:block;
     }
 
     .card{
@@ -43,7 +45,7 @@
       padding:40px 34px 34px;
       text-align:center;
       position:relative;
-      margin: 0 auto;
+      margin: 0 auto; /* ✅ center without flex */
     }
 
     /* top icon */
@@ -68,8 +70,7 @@
       height:190px;
       width:min(820px, 88vw);
       margin:0 auto;
-      /* ✅ helps mobile pointer interactions */
-      touch-action: none;
+      touch-action: none; /* helps on mobile */
     }
     button{
       border:0;
@@ -127,7 +128,7 @@
       margin:8px 0 16px;
     }
 
-    /* ✅ slideshow now adapts and doesn't crop */
+    /* ✅ slideshow: fixed viewport-friendly area + images never crop */
     .slideshow{
       width:min(820px, 88vw);
       margin:0 auto;
@@ -137,21 +138,27 @@
       background:#f3f4f6;
       box-shadow: 0 22px 60px rgba(0,0,0,.18);
 
-      /* allow it to be tall enough for portrait shots */
+      /* ✅ make it tall enough; still allows page scroll naturally */
+      height: min(78vh, 620px);
       min-height: 320px;
-      max-height: 72vh;
 
       display:flex;
       align-items:center;
       justify-content:center;
     }
+
+    /* ✅ stack slides so only one "takes space" (prevents layout weirdness) */
     .slideImg{
+      position:absolute;
+      inset:0;
       width:100%;
       height:100%;
-      object-fit: contain;   /* ✅ shows full photo */
+      object-fit: contain;         /* ✅ show full photo */
+      object-position: center;
       display:block;
       opacity:0;
       transition: opacity .35s ease;
+      background:#f3f4f6;
     }
     .slideImg.active{ opacity:1; }
 
@@ -165,6 +172,7 @@
       font-size:15px;
       backdrop-filter: blur(6px);
       text-align:left;
+      z-index:2;
     }
 
     /* floating hearts */
@@ -246,7 +254,12 @@
       .iconWrap{ width:150px; height:150px; }
       .stage{ height:170px; }
       #yesBtn{ padding: 26px 62px; }
-      .slideshow{ max-height: 66vh; min-height: 280px; }
+
+      /* ✅ a bit taller on phone so portrait photos show better */
+      .slideshow{
+        height: min(72vh, 520px);
+        min-height: 300px;
+      }
     }
   </style>
 </head>
@@ -386,24 +399,40 @@
       randomNearPointer(clientX, clientY);
     }
 
-    // ✅ pointer events: works for mouse + touch consistently
-    function onPointerMove(e){
+    // ✅ unified handler for mouse + touch (fallbacks for iOS)
+    function considerEvade(clientX, clientY){
       if (yay.style.display === "block") return;
-      const x = e.clientX;
-      const y = e.clientY;
-      if (distToNo(x, y) < EVADE_DISTANCE) {
-        maybeMove(x, y);
+      if (distToNo(clientX, clientY) < EVADE_DISTANCE) {
+        maybeMove(clientX, clientY);
       }
     }
 
-    stage.addEventListener("pointermove", onPointerMove);
+    // Pointer (modern)
+    stage.addEventListener("pointermove", (e) => considerEvade(e.clientX, e.clientY), { passive: true });
     stage.addEventListener("pointerdown", (e) => {
       if (yay.style.display === "block") return;
-      // nudge immediately when finger touches the stage
+      // on phone there is no hover; start evading as soon as finger touches stage
       maybeMove(e.clientX, e.clientY);
-      // capture so continued movement still triggers even if finger drifts slightly
       try { stage.setPointerCapture(e.pointerId); } catch {}
-    });
+    }, { passive: true });
+
+    // Mouse fallback
+    stage.addEventListener("mousemove", (e) => considerEvade(e.clientX, e.clientY), { passive: true });
+
+    // Touch fallback (important for some mobile browsers)
+    stage.addEventListener("touchstart", (e) => {
+      if (yay.style.display === "block") return;
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      maybeMove(t.clientX, t.clientY);
+    }, { passive: true });
+
+    stage.addEventListener("touchmove", (e) => {
+      if (yay.style.display === "block") return;
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      considerEvade(t.clientX, t.clientY);
+    }, { passive: true });
 
     noBtn.addEventListener("pointerenter", (e) => {
       if (yay.style.display === "block") return;
@@ -463,7 +492,6 @@
     let slideTimer = null;
     let finaleShownThisLoop = false;
 
-    // ✅ build <img> slides (no cropping, supports varying aspect ratios)
     function buildSlides(){
       [...slideshow.querySelectorAll(".slideImg")].forEach(n => n.remove());
 
@@ -566,7 +594,7 @@
       buildSlides();
       startSlideshow();
 
-      // ✅ ensure page can scroll to see the slideshow on small screens
+      // scroll to slideshow area (page scroll now works reliably)
       yay.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   </script>
