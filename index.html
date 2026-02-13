@@ -16,15 +16,22 @@
     body{
       margin:0;
       min-height:100vh;
-      display:grid;
-      place-items:center;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background:
         radial-gradient(1200px 800px at 20% 20%, #ffd2e0, transparent 55%),
         radial-gradient(1200px 800px at 80% 80%, #ffc1d6, transparent 55%),
         linear-gradient(135deg, #ffeaf2, #ffd6e6);
       color:var(--text);
-      overflow:hidden;
+
+      /* ✅ allow vertical scrolling */
+      overflow-x:hidden;
+      overflow-y:auto;
+
+      /* ✅ avoid "too short" feeling; keep comfy padding */
+      padding: 28px 0;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
     }
 
     .card{
@@ -36,6 +43,7 @@
       padding:40px 34px 34px;
       text-align:center;
       position:relative;
+      margin: 0 auto;
     }
 
     /* top icon */
@@ -60,6 +68,8 @@
       height:190px;
       width:min(820px, 88vw);
       margin:0 auto;
+      /* ✅ helps mobile pointer interactions */
+      touch-action: none;
     }
     button{
       border:0;
@@ -68,6 +78,7 @@
       border-radius:999px;
       box-shadow: 0 18px 40px rgba(0,0,0,.18);
       user-select:none;
+      -webkit-user-select:none;
       touch-action: manipulation;
       position:absolute;
       top:50%;
@@ -116,25 +127,33 @@
       margin:8px 0 16px;
     }
 
+    /* ✅ slideshow now adapts and doesn't crop */
     .slideshow{
       width:min(820px, 88vw);
-      aspect-ratio: 16 / 10;
       margin:0 auto;
       border-radius:20px;
       overflow:hidden;
       position:relative;
       background:#f3f4f6;
       box-shadow: 0 22px 60px rgba(0,0,0,.18);
+
+      /* allow it to be tall enough for portrait shots */
+      min-height: 320px;
+      max-height: 72vh;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .slide{
-      position:absolute; inset:0;
+    .slideImg{
+      width:100%;
+      height:100%;
+      object-fit: contain;   /* ✅ shows full photo */
+      display:block;
       opacity:0;
       transition: opacity .35s ease;
-      background-size: cover;
-      background-position: center;
-      transform: scale(1.01);
     }
-    .slide.active{ opacity:1; }
+    .slideImg.active{ opacity:1; }
 
     .caption{
       position:absolute;
@@ -145,6 +164,7 @@
       color:#fff;
       font-size:15px;
       backdrop-filter: blur(6px);
+      text-align:left;
     }
 
     /* floating hearts */
@@ -221,10 +241,12 @@
     }
 
     @media (max-width:520px){
+      body{ padding: 18px 0; }
       .card{ padding:26px 16px 22px; border-radius:26px; }
       .iconWrap{ width:150px; height:150px; }
       .stage{ height:170px; }
       #yesBtn{ padding: 26px 62px; }
+      .slideshow{ max-height: 66vh; min-height: 280px; }
     }
   </style>
 </head>
@@ -364,35 +386,29 @@
       randomNearPointer(clientX, clientY);
     }
 
-    stage.addEventListener("mousemove", (e) => {
+    // ✅ pointer events: works for mouse + touch consistently
+    function onPointerMove(e){
       if (yay.style.display === "block") return;
-      if (distToNo(e.clientX, e.clientY) < EVADE_DISTANCE) {
-        maybeMove(e.clientX, e.clientY);
+      const x = e.clientX;
+      const y = e.clientY;
+      if (distToNo(x, y) < EVADE_DISTANCE) {
+        maybeMove(x, y);
       }
+    }
+
+    stage.addEventListener("pointermove", onPointerMove);
+    stage.addEventListener("pointerdown", (e) => {
+      if (yay.style.display === "block") return;
+      // nudge immediately when finger touches the stage
+      maybeMove(e.clientX, e.clientY);
+      // capture so continued movement still triggers even if finger drifts slightly
+      try { stage.setPointerCapture(e.pointerId); } catch {}
     });
 
-    noBtn.addEventListener("mouseenter", (e) => {
+    noBtn.addEventListener("pointerenter", (e) => {
       if (yay.style.display === "block") return;
-      // immediate move on hover attempt
       maybeMove(e.clientX, e.clientY);
     });
-
-    // MOBILE: move when finger is anywhere on stage (fast + fun)
-    stage.addEventListener("touchstart", (e) => {
-      if (yay.style.display === "block") return;
-      const t = e.touches[0];
-      if (!t) return;
-      maybeMove(t.clientX, t.clientY);
-    }, {passive:true});
-
-    stage.addEventListener("touchmove", (e) => {
-      if (yay.style.display === "block") return;
-      const t = e.touches[0];
-      if (!t) return;
-      if (distToNo(t.clientX, t.clientY) < EVADE_DISTANCE + 60) {
-        maybeMove(t.clientX, t.clientY);
-      }
-    }, {passive:true});
 
     // If NO gets clicked: heartbreak overlay + sad burst
     function spawnSad(){
@@ -433,8 +449,6 @@
       e.preventDefault();
       hint.textContent = "Oh no… 💔";
       showHeartbreak();
-
-      // after heartbreak, make it run away again
       maybeMove(Math.random()*window.innerWidth, Math.random()*window.innerHeight);
     });
 
@@ -449,15 +463,17 @@
     let slideTimer = null;
     let finaleShownThisLoop = false;
 
+    // ✅ build <img> slides (no cropping, supports varying aspect ratios)
     function buildSlides(){
-      [...slideshow.querySelectorAll(".slide")].forEach(n => n.remove());
+      [...slideshow.querySelectorAll(".slideImg")].forEach(n => n.remove());
 
       PHOTOS.forEach((p, i) => {
-        const d = document.createElement("div");
-        d.className = "slide" + (i === 0 ? " active" : "");
-        d.style.backgroundImage = `url("${p.src}")`;
-        d.dataset.caption = p.caption || "";
-        slideshow.insertBefore(d, captionEl);
+        const img = document.createElement("img");
+        img.className = "slideImg" + (i === 0 ? " active" : "");
+        img.src = p.src;
+        img.alt = "photo " + (i+1);
+        img.dataset.caption = p.caption || "";
+        slideshow.insertBefore(img, captionEl);
       });
 
       captionEl.textContent = PHOTOS[0]?.caption || "";
@@ -500,7 +516,7 @@
     }
 
     function startSlideshow(){
-      const slides = [...slideshow.querySelectorAll(".slide")];
+      const slides = [...slideshow.querySelectorAll(".slideImg")];
       if (!slides.length) {
         captionEl.textContent = "No photos found — check filenames.";
         return;
@@ -549,6 +565,9 @@
 
       buildSlides();
       startSlideshow();
+
+      // ✅ ensure page can scroll to see the slideshow on small screens
+      yay.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   </script>
 </body>
